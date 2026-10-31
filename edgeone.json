@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "outputDirectory": "./build",
-  "nodeVersion": "22.19.0",
+  "nodeVersion": "22.11.0",
   "headers": [
     {
       "source": "/*",
