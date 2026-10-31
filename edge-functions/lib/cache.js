@@ -30,17 +30,34 @@ async function writeCache(request, suffix, response, seconds) {
   });
 }
 
+async function readCacheSafely(request, suffix) {
+  try {
+    return await readCache(request, suffix);
+  } catch {
+    return undefined;
+  }
+}
+
+async function writeCacheSafely(request, suffix, response, seconds) {
+  try {
+    await writeCache(request, suffix, response, seconds);
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 export async function withCache(context, ttl, staleTtl, producer) {
-  const fresh = await readCache(context.request, 'fresh');
+  const fresh = await readCacheSafely(context.request, 'fresh');
   if (fresh) return fresh;
   try {
     const data = await producer();
     const response = json(data, 200, ttl);
-    await writeCache(context.request, 'fresh', response, ttl);
-    await writeCache(context.request, 'stale', response, staleTtl);
+    await writeCacheSafely(context.request, 'fresh', response, ttl);
+    await writeCacheSafely(context.request, 'stale', response, staleTtl);
     return response;
   } catch (error) {
-    const stale = await readCache(context.request, 'stale');
+    const stale = await readCacheSafely(context.request, 'stale');
     if (stale) {
       const data = await stale.json();
       return json({ ...data, stale: true }, 200);

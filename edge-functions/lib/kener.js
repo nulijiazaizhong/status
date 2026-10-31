@@ -15,7 +15,12 @@ export function getConfig(env) {
   if (!baseUrl || !apiKey) {
     throw new KenerError('状态数据服务尚未完成配置', 503, 'NOT_CONFIGURED');
   }
-  const parsed = new URL(baseUrl);
+  let parsed;
+  try {
+    parsed = new URL(baseUrl);
+  } catch {
+    throw new KenerError('Kener 地址格式无效', 503, 'INVALID_CONFIGURATION');
+  }
   const local = ['localhost', '127.0.0.1'].includes(parsed.hostname);
   if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && local)) {
     throw new KenerError('Kener 必须使用公网 HTTPS 地址', 503, 'INVALID_CONFIGURATION');
