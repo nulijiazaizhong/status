@@ -42,7 +42,13 @@ export async function kenerGet(env, path) {
     response = await fetch(`${config.baseUrl}/api/v4${path}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${config.apiKey}`, Accept: 'application/json' },
-      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      eo: {
+        timeoutSetting: {
+          connectTimeout: DEFAULT_TIMEOUT_MS,
+          readTimeout: DEFAULT_TIMEOUT_MS,
+          writeTimeout: DEFAULT_TIMEOUT_MS,
+        },
+      },
     });
   } catch (error) {
     const timedOut = error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name);
