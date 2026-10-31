@@ -13,7 +13,7 @@
   let loading = $state(true);
   let error = $state('');
   let selected = $state<HistoryDay | null>(null);
-  let days = $state(90);
+  let days = $state(30);
 
   async function load() {
     loading = true;
@@ -28,7 +28,6 @@
   }
 
   onMount(() => {
-    days = window.matchMedia('(max-width: 600px)').matches ? 30 : 90;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         void load();

@@ -10,6 +10,7 @@ function payload(path) {
   if (path === '/pages/~home') return { page: { page_title: 'Status', page_header: 'Brand', page_subheader: null, page_logo: null, monitors: [{ monitor_tag: 'api', position: 0 }, { monitor_tag: 'other', position: 1 }] } };
   if (path.startsWith('/monitors?')) return { monitors: [monitor] };
   if (path.startsWith('/monitors/api/data')) return { data: [{ monitor_tag: 'api', timestamp: 1760000000, status: 'UP', latency: 120, type: 'REAL' }] };
+  if (path.startsWith('/dashboard-apis/monitor-bars')) return { data: { api: { uptime: '99.8912', uptimeData: [{ ts: 1760000000, countOfUp: 1440, countOfDown: 0, countOfDegraded: 0, countOfMaintenance: 0, avgLatency: 120 }] } } };
   if (path.startsWith('/incidents?')) return { incidents: [] };
   if (path.startsWith('/maintenances/events')) return { events: [] };
   throw new Error(`Unexpected path ${path}`);
@@ -44,7 +45,7 @@ describe('public API', () => {
 
   it('rejects tags outside the current page and invalid ranges', async () => {
     vi.stubGlobal('fetch', mockFetch());
-    const invalid = await history({ ...context('/api/monitors/other/history?days=90'), params: { tag: 'other' } });
+    const invalid = await history({ ...context('/api/monitors/other/history?days=30'), params: { tag: 'other' } });
     expect(invalid.status).toBe(404);
     const range = await history({ ...context('/api/monitors/api/history?days=91'), params: { tag: 'api' } });
     expect(range.status).toBe(400);

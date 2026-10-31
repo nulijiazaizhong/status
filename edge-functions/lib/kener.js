@@ -34,12 +34,12 @@ export function getConfig(env) {
   };
 }
 
-export async function kenerGet(env, path) {
+export async function kenerGet(env, path, basePath = '/api/v4') {
   const config = getConfig(env);
   const endpoint = path.split('?')[0];
   let response;
   try {
-    response = await fetch(`${config.baseUrl}/api/v4${path}`, {
+    response = await fetch(`${config.baseUrl}${basePath}${path}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${config.apiKey}`, Accept: 'application/json' },
       eo: {

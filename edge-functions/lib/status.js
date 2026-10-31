@@ -73,12 +73,7 @@ export function evaluateFormula(formula, values) {
   return stack[0];
 }
 
-export function calculateUptime(points, settings = {}) {
-  const values = { up: 0, down: 0, degraded: 0, maintenance: 0 };
-  for (const point of points) {
-    const key = String(point.status || '').toLowerCase();
-    if (STATUS_COUNTS.includes(key)) values[key] += 1;
-  }
+export function calculateUptimeCounts(values, settings = {}) {
   const numerator = settings.uptime_formula_numerator || 'up + maintenance + degraded';
   const denominator = settings.uptime_formula_denominator || 'up + down + degraded + maintenance';
   let divisor;
@@ -91,6 +86,15 @@ export function calculateUptime(points, settings = {}) {
     const fallbackTotal = values.up + values.down + values.degraded + values.maintenance;
     return fallbackTotal ? Math.round(((values.up + values.maintenance + values.degraded) / fallbackTotal) * 10000) / 100 : null;
   }
+}
+
+export function calculateUptime(points, settings = {}) {
+  const values = { up: 0, down: 0, degraded: 0, maintenance: 0 };
+  for (const point of points) {
+    const key = String(point.status || '').toLowerCase();
+    if (STATUS_COUNTS.includes(key)) values[key] += 1;
+  }
+  return calculateUptimeCounts(values, settings);
 }
 
 export function averageLatency(points) {
