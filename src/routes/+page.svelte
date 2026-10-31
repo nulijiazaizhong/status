@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { env } from '$env/dynamic/public';
   const PUBLIC_STATUS_URL = env.PUBLIC_STATUS_URL;
-  import { getStatus } from '$lib/api';
+  import { getCachedStatus, getStatus } from '$lib/api';
   import StatusHeader from '$lib/components/StatusHeader.svelte';
   import StatusHero from '$lib/components/StatusHero.svelte';
   import ActiveNoticeList from '$lib/components/ActiveNoticeList.svelte';
@@ -38,6 +38,11 @@
   }
 
   onMount(() => {
+    const cached = getCachedStatus();
+    if (cached) {
+      data = cached;
+      loading = false;
+    }
     void refresh();
     let timer: ReturnType<typeof setInterval> | undefined;
     const start = () => {
