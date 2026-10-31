@@ -13,7 +13,7 @@ export function json(data, status = 200, cacheSeconds = 0) {
 
 export function errorResponse(error) {
   if (error instanceof KenerError) {
-    return json({ error: { code: error.code, message: '暂时无法获取最新状态，请稍后重试。' } }, error.status);
+    return json({ error: { code: error.code, endpoint: error.endpoint, message: '暂时无法获取最新状态，请稍后重试。' } }, error.status);
   }
   return json({ error: { code: 'INTERNAL_ERROR', message: '状态服务暂时不可用，请稍后重试。' } }, 500);
 }

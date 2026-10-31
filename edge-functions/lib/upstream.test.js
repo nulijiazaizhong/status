@@ -8,11 +8,15 @@ const context = () => ({ request: new Request('https://status.example.com/api/st
 describe('upstream failures', () => {
   beforeEach(() => { clearMemoryCache(); vi.unstubAllGlobals(); });
 
-  it.each([404, 429, 500])('maps Kener %s to a data source error', async (code) => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: code })));
+  it.each([
+    [404, 'UPSTREAM_NOT_FOUND'],
+    [429, 'UPSTREAM_RATE_LIMITED'],
+    [500, 'UPSTREAM_UNAVAILABLE'],
+  ])('maps Kener %s to a specific data source error', async (httpStatus, code) => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: httpStatus })));
     const response = await status(context());
     expect(response.status).toBe(502);
-    expect((await response.json()).error.code).toBe('UPSTREAM_ERROR');
+    expect((await response.json()).error).toMatchObject({ code, endpoint: '/pages/public' });
   });
 
   it('distinguishes timeout', async () => {

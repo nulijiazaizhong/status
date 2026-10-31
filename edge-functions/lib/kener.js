@@ -1,11 +1,12 @@
 const DEFAULT_TIMEOUT_MS = 6500;
 
 export class KenerError extends Error {
-  constructor(message, status = 502, code = 'UPSTREAM_ERROR') {
+  constructor(message, status = 502, code = 'UPSTREAM_ERROR', endpoint = null) {
     super(message);
     this.name = 'KenerError';
     this.status = status;
     this.code = code;
+    this.endpoint = endpoint;
   }
 }
 
@@ -35,6 +36,7 @@ export function getConfig(env) {
 
 export async function kenerGet(env, path) {
   const config = getConfig(env);
+  const endpoint = path.split('?')[0];
   let response;
   try {
     response = await fetch(`${config.baseUrl}/api/v4${path}`, {
@@ -44,16 +46,22 @@ export async function kenerGet(env, path) {
     });
   } catch (error) {
     const timedOut = error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name);
-    throw new KenerError(timedOut ? 'Kener 请求超时' : '无法连接 Kener', timedOut ? 504 : 502);
+    throw new KenerError(timedOut ? 'Kener 请求超时' : '无法连接 Kener', timedOut ? 504 : 502, timedOut ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_CONNECTION', endpoint);
   }
   if (!response.ok) {
-    const status = response.status === 429 || response.status >= 500 ? 502 : response.status === 401 ? 503 : 502;
-    throw new KenerError(`Kener 返回 ${response.status}`, status, response.status === 401 ? 'UPSTREAM_UNAUTHORIZED' : 'UPSTREAM_ERROR');
+    const code = response.status === 401 ? 'UPSTREAM_UNAUTHORIZED'
+      : response.status === 403 ? 'UPSTREAM_FORBIDDEN'
+      : response.status === 404 ? 'UPSTREAM_NOT_FOUND'
+      : response.status === 429 ? 'UPSTREAM_RATE_LIMITED'
+      : response.status >= 500 ? 'UPSTREAM_UNAVAILABLE'
+      : 'UPSTREAM_ERROR';
+    const status = response.status === 401 || response.status === 403 ? 503 : 502;
+    throw new KenerError(`Kener 返回 ${response.status}`, status, code, endpoint);
   }
   try {
     return await response.json();
   } catch {
-    throw new KenerError('Kener 返回了无效数据');
+    throw new KenerError('Kener 返回了无效数据', 502, 'UPSTREAM_INVALID_RESPONSE', endpoint);
   }
 }
 
