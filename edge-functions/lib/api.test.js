@@ -13,6 +13,7 @@ function payload(path) {
   if (path.startsWith('/dashboard-apis/monitor-bars')) return { data: { api: { uptime: '99.8912', uptimeData: [{ ts: 1760000000, countOfUp: 1440, countOfDown: 0, countOfDegraded: 0, countOfMaintenance: 0, avgLatency: 120 }] } } };
   if (path.startsWith('/incidents?')) return { incidents: [] };
   if (path.startsWith('/maintenances/events')) return { events: [] };
+  if (path.startsWith('/dashboard-apis/events-by-month')) return { maintenances: [] };
   throw new Error(`Unexpected path ${path}`);
 }
 

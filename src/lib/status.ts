@@ -28,6 +28,7 @@ export const maintenanceStates = {
   SCHEDULED: '已计划',
   READY: '即将开始',
   ONGOING: '维护中',
+  COMPLETED: '已完成',
 };
 
 export function isOngoing(incident: { state: string; endedAt: number | null }) {

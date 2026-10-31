@@ -34,10 +34,10 @@ export interface Maintenance {
   id: number;
   title: string;
   description: string | null;
-  status: 'SCHEDULED' | 'READY' | 'ONGOING';
+  status: 'SCHEDULED' | 'READY' | 'ONGOING' | 'COMPLETED';
   startedAt: number;
   endedAt: number;
-  url: string;
+  url: string | null;
   monitors: AffectedMonitor[];
 }
 
@@ -50,6 +50,7 @@ export interface StatusData {
   monitors: PublicMonitor[];
   incidents: Incident[];
   maintenances: Maintenance[];
+  maintenanceHistory: Maintenance[];
   warnings?: Array<{ code: string; endpoint: string }>;
 }
 

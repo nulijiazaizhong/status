@@ -14,6 +14,7 @@ describe('partial monitor failures', () => {
       if (path === '/api/v4/monitors/beijing/data') return new Response('not-json', { status: 200 });
       if (path === '/api/v4/incidents') return Response.json({ incidents: [] });
       if (path === '/api/v4/maintenances/events') return Response.json({ events: [] });
+      if (path === '/dashboard-apis/events-by-month') return Response.json({ maintenances: [] });
       throw new Error(`Unexpected ${path}`);
     }));
     const body = await getStatus(env, 1760000100);

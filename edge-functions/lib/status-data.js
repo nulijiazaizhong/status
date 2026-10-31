@@ -6,9 +6,14 @@ const DAY = 86400;
 export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
   const { page, monitors } = await getPageAndMonitors(env);
   const start = now - 90 * DAY;
-  const [incidentResponse, maintenanceResponse, current] = await Promise.all([
+  const [incidentResponse, maintenanceResponse, eventsResponse, current] = await Promise.all([
     kenerGet(env, `/incidents?start_ts=${start}`),
     kenerGet(env, `/maintenances/events?limit=100&event_start_date_time=${now - DAY}`),
+    kenerGet(env, '/dashboard-apis/events-by-month', '', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_ts: start, end_ts: now + 90 * DAY }),
+    }),
     mapLimit(monitors, 5, async (monitor) => {
       try {
         const response = await kenerGet(env, `/monitors/${encodeURIComponent(monitor.tag)}/data?start_ts=${now - DAY}&end_ts=${now + 60}`);
@@ -62,6 +67,23 @@ export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
       })),
     }))
     .sort((a, b) => a.startedAt - b.startedAt);
+  const maintenanceHistory = (eventsResponse?.maintenances || [])
+    .filter((event) => event.status === 'COMPLETED')
+    .filter((event) => (event.monitors || []).some((monitor) => pageTags.has(monitor.monitor_tag)))
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      status: 'COMPLETED',
+      startedAt: event.start_date_time,
+      endedAt: event.end_date_time || event.start_date_time,
+      url: null,
+      monitors: event.monitors.filter((monitor) => pageTags.has(monitor.monitor_tag)).map((monitor) => ({
+        tag: monitor.monitor_tag,
+        name: monitor.monitor_name || monitorsByTag.get(monitor.monitor_tag)?.name || monitor.monitor_tag,
+      })),
+    }))
+    .sort((a, b) => b.startedAt - a.startedAt);
   const ongoing = maintenances.filter((event) => event.status === 'ONGOING').length;
   return {
     generatedAt: now,
@@ -81,6 +103,7 @@ export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
     monitors: publicMonitors,
     incidents,
     maintenances,
+    maintenanceHistory,
     warnings: current.filter((item) => item.dataError).map((item) => ({
       code: item.dataError,
       endpoint: `/monitors/${item.monitor.tag}/data`,
