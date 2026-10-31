@@ -10,6 +10,7 @@ export interface PublicMonitor {
   averageLatency: number | null;
   uptime: number | null;
   updatedAt: number | null;
+  dataError?: string | null;
 }
 
 export interface AffectedMonitor {
@@ -49,6 +50,7 @@ export interface StatusData {
   monitors: PublicMonitor[];
   incidents: Incident[];
   maintenances: Maintenance[];
+  warnings?: Array<{ code: string; endpoint: string }>;
 }
 
 export interface HistoryDay {

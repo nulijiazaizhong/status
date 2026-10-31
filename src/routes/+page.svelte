@@ -74,6 +74,7 @@
       <div class="sr-only" aria-live="polite">{announcement}</div>
       {#if data.stale}<div class="notice"><InlineError stale message={`当前展示缓存数据，更新时间为 ${new Date(data.generatedAt * 1000).toLocaleString('zh-CN')}。`} retry={() => refresh(true)} /></div>{/if}
       {#if error}<div class="notice"><InlineError message={`${error} 页面保留上次成功获取的数据。`} retry={() => refresh(true)} /></div>{/if}
+      {#if data.warnings?.length}<div class="notice"><InlineError message="部分监控数据暂时不可用，页面显示其余成功获取的数据。" retry={() => refresh(true)} /></div>{/if}
       <StatusHero {data} {hasActiveNotices} />
       <ActiveNoticeList incidents={data.incidents} maintenances={data.maintenances} timezone={data.timezone} />
       <MonitorSection monitors={data.monitors} incidents={data.incidents} timezone={data.timezone} />

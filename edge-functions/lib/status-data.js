@@ -1,4 +1,4 @@
-import { getPageAndMonitors, kenerGet, mapLimit, publicIncident, publicMonitor } from './kener.js';
+import { getPageAndMonitors, kenerGet, KenerError, mapLimit, publicIncident, publicMonitor } from './kener.js';
 import { averageLatency, calculateUptime, overallStatus } from './status.js';
 
 const DAY = 86400;
@@ -10,19 +10,25 @@ export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
     kenerGet(env, `/incidents?start_ts=${start}`),
     kenerGet(env, `/maintenances/events?limit=100&event_start_date_time=${now - DAY}`),
     mapLimit(monitors, 5, async (monitor) => {
-      const response = await kenerGet(env, `/monitors/${encodeURIComponent(monitor.tag)}/data?start_ts=${now - DAY}&end_ts=${now + 60}`);
-      const points = Array.isArray(response?.data) ? response.data : [];
-      const latest = points.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
-      return { monitor, points, latest };
+      try {
+        const response = await kenerGet(env, `/monitors/${encodeURIComponent(monitor.tag)}/data?start_ts=${now - DAY}&end_ts=${now + 60}`);
+        const points = Array.isArray(response?.data) ? response.data : [];
+        const latest = points.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+        return { monitor, points, latest, dataError: null };
+      } catch (error) {
+        if (!(error instanceof KenerError)) throw error;
+        return { monitor, points: [], latest: null, dataError: error.code };
+      }
     }),
   ]);
   const monitorsByTag = new Map(monitors.map((monitor) => [monitor.tag, monitor]));
-  const publicMonitors = current.map(({ monitor, points, latest }) => ({
+  const publicMonitors = current.map(({ monitor, points, latest, dataError }) => ({
     ...publicMonitor(monitor),
     status: latest?.status || 'NO_DATA',
     averageLatency: averageLatency(points),
     uptime: calculateUptime(points, monitor.monitor_settings_json || {}),
     updatedAt: latest?.timestamp || null,
+    dataError,
   }));
   const baseIncidents = (incidentResponse?.incidents || [])
     .map((incident) => publicIncident(incident, monitorsByTag))
@@ -75,5 +81,9 @@ export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
     monitors: publicMonitors,
     incidents,
     maintenances,
+    warnings: current.filter((item) => item.dataError).map((item) => ({
+      code: item.dataError,
+      endpoint: `/monitors/${item.monitor.tag}/data`,
+    })),
   };
 }

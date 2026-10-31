@@ -14,8 +14,9 @@
 <article class="monitor-card">
   <div class="heading">
     <div><h3>{monitor.name}</h3>{#if monitor.description}<p>{monitor.description}</p>{/if}</div>
-    <StatusBadge status={monitor.status} />
+    <StatusBadge status={monitor.status} label={monitor.dataError ? '数据不可用' : undefined} />
   </div>
+  {#if monitor.dataError}<p class="data-error">该服务的监控数据获取失败，不代表服务已经宕机。</p>{/if}
   <HistoryBars tag={monitor.tag} {timezone} />
   <div class="monitor-meta">
     {#if monitor.averageLatency !== null}<span>近 24 小时平均响应 <strong>{monitor.averageLatency} ms</strong></span>{/if}
@@ -40,6 +41,7 @@
   .heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   h3 { margin: 0; color: #FFF; font-size: 18px; line-height: 28px; font-weight: 600; text-wrap: balance; }
   p { margin: 4px 0 0; color: #A3A3A3; font-size: 14px; line-height: 20px; text-wrap: pretty; }
+  .data-error { margin-top: 12px; padding: 12px; border: 1px solid #FBBF24; border-radius: 8px; color: #FBBF24; }
   .monitor-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; color: #737373; font-size: 12px; line-height: 16px; }
   strong { color: #A3A3A3; font-family: 'Geist Mono',monospace; font-weight: 400; }
   .expand { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 16px; padding: 12px 0 0; border: 0; border-top: 1px solid #313131; background: transparent; color: #A3A3A3; font: inherit; font-size: 14px; line-height: 20px; cursor: pointer; }
