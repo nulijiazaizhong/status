@@ -1,8 +1,8 @@
 <script lang="ts">
   import { CaretDown, Wrench } from 'phosphor-svelte';
-  import { reveal } from '$lib/actions/reveal';
-  import { formatDateTime } from '$lib/format';
-  import type { Maintenance } from '$lib/types';
+  import { reveal } from '../actions/reveal';
+  import { formatDateTime } from '../format';
+  import type { Maintenance } from '../types';
 
   let { maintenances, timezone }: { maintenances: Maintenance[]; timezone: string } = $props();
   let expanded = $state<number | null>(null);

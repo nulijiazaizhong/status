@@ -6,7 +6,7 @@
   import '@fontsource/geist-mono/500.css';
   import 'lxgw-wenkai-webfont/lxgwwenkaimono-regular.css';
   import '../app.css';
-  import { env } from '$env/dynamic/public';
+  import { publicEnv as env } from '../lib/config';
 
   let { children } = $props();
 </script>

@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "mock:kener": "node scripts/mock-kener.mjs",
-    "makers:dev": "edgeone makers dev"
+    "makers:dev": "npx edgeone makers dev"
   },
   "dependencies": {
     "@fontsource/geist": "^5.3.0",
@@ -20,14 +20,17 @@
     "phosphor-svelte": "^3.1.1"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.10",
-    "@sveltejs/kit": "^2.53.3",
-    "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "edgeone": "^1.6.47",
-    "svelte": "^5.53.5",
+    "@sveltejs/adapter-static": "^4.0.1",
+    "@sveltejs/kit": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^22.20.5",
+    "svelte": "^5.57.3",
     "svelte-check": "^4.3.4",
-    "typescript": "^5.9.3",
-    "vite": "^7.2.2",
-    "vitest": "^4.1.10"
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "deepmerge": "4.1.2"
   }
 }

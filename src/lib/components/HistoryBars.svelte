@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { ArrowClockwise } from 'phosphor-svelte';
-  import { getHistory } from '$lib/api';
-  import { formatHistoryDate, formatUptime } from '$lib/format';
-  import { serviceStatus } from '$lib/status';
-  import type { HistoryData, HistoryDay } from '$lib/types';
+  import { getHistory } from '../api';
+  import { formatHistoryDate, formatUptime } from '../format';
+  import { serviceStatus } from '../status';
+  import type { HistoryData, HistoryDay } from '../types';
   import DayTooltip from './DayTooltip.svelte';
 
   let { tag, timezone }: { tag: string; timezone: string } = $props();

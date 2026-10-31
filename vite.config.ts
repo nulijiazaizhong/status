@@ -1,4 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import adapter from '@sveltejs/adapter-static';
 import { defineConfig, type Connect } from 'vite';
 import { pathToFileURL } from 'node:url';
 
@@ -35,5 +36,6 @@ function edgeFunctions(): Connect.NextHandleFunction {
 }
 
 export default defineConfig({
-  plugins: [sveltekit(), { name: 'local-edge-functions', configureServer: (server) => { server.middlewares.use(edgeFunctions()); } }],
+  envPrefix: 'PUBLIC_',
+  plugins: [sveltekit({ adapter: adapter({ fallback: 'index.html' }) }), { name: 'local-edge-functions', configureServer: (server) => { server.middlewares.use(edgeFunctions()); } }],
 });

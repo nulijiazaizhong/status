@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Heartbeat, ArrowUpRight, Bell } from 'phosphor-svelte';
-  import { env } from '$env/dynamic/public';
+  import { publicEnv as env } from '../config';
   const PUBLIC_HOME_URL = env.PUBLIC_HOME_URL;
   const PUBLIC_SUBSCRIBE_URL = env.PUBLIC_SUBSCRIBE_URL;
 

@@ -1,18 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { env } from '$env/dynamic/public';
+  import { publicEnv as env } from '../lib/config';
   const PUBLIC_STATUS_URL = env.PUBLIC_STATUS_URL;
-  import { getCachedStatus, getStatus } from '$lib/api';
-  import StatusHeader from '$lib/components/StatusHeader.svelte';
-  import StatusHero from '$lib/components/StatusHero.svelte';
-  import ActiveNoticeList from '$lib/components/ActiveNoticeList.svelte';
-  import MonitorSection from '$lib/components/MonitorSection.svelte';
-  import EventCalendar from '$lib/components/EventCalendar.svelte';
-  import StatusFooter from '$lib/components/StatusFooter.svelte';
-  import SkeletonCard from '$lib/components/SkeletonCard.svelte';
-  import InlineError from '$lib/components/InlineError.svelte';
-  import { isOngoing } from '$lib/status';
-  import type { StatusData } from '$lib/types';
+  import { getCachedStatus, getStatus } from '../lib/api';
+  import StatusHeader from '../lib/components/StatusHeader.svelte';
+  import StatusHero from '../lib/components/StatusHero.svelte';
+  import ActiveNoticeList from '../lib/components/ActiveNoticeList.svelte';
+  import MonitorSection from '../lib/components/MonitorSection.svelte';
+  import EventCalendar from '../lib/components/EventCalendar.svelte';
+  import StatusFooter from '../lib/components/StatusFooter.svelte';
+  import SkeletonCard from '../lib/components/SkeletonCard.svelte';
+  import InlineError from '../lib/components/InlineError.svelte';
+  import { isOngoing } from '../lib/status';
+  import type { StatusData } from '../lib/types';
 
   let data = $state<StatusData | null>(null);
   let error = $state('');

@@ -2,9 +2,9 @@
   import { CaretDown } from 'phosphor-svelte';
   import StatusBadge from './StatusBadge.svelte';
   import HistoryBars from './HistoryBars.svelte';
-  import { formatDateTime } from '$lib/format';
-  import { incidentStates } from '$lib/status';
-  import type { Incident, PublicMonitor } from '$lib/types';
+  import { formatDateTime } from '../format';
+  import { incidentStates } from '../status';
+  import type { Incident, PublicMonitor } from '../types';
 
   let { monitor, incidents, timezone }: { monitor: PublicMonitor; incidents: Incident[]; timezone: string } = $props();
   let expanded = $state(false);

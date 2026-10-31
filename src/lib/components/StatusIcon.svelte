@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CheckCircle, XCircle, WarningCircle, Wrench, MinusCircle, CloudSlash } from 'phosphor-svelte';
-  import type { ServiceStatus, SummaryStatus } from '$lib/types';
+  import type { ServiceStatus, SummaryStatus } from '../types';
 
   let { status, size = 24 }: { status: ServiceStatus | SummaryStatus | 'ERROR'; size?: number } = $props();
   const degraded = $derived(['DEGRADED', 'PARTIAL_OUTAGE'].includes(status));

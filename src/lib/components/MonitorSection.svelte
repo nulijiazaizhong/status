@@ -1,7 +1,7 @@
 <script lang="ts">
   import MonitorCard from './MonitorCard.svelte';
-  import { reveal } from '$lib/actions/reveal';
-  import type { Incident, PublicMonitor } from '$lib/types';
+  import { reveal } from '../actions/reveal';
+  import type { Incident, PublicMonitor } from '../types';
 
   let { monitors, incidents, timezone }: { monitors: PublicMonitor[]; incidents: Incident[]; timezone: string } = $props();
   const groups = $derived.by(() => {

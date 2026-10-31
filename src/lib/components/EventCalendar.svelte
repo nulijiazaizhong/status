@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
   import { ArrowLeft, ArrowRight, Wrench } from 'phosphor-svelte';
   import IncidentItem from './IncidentItem.svelte';
-  import { reveal } from '$lib/actions/reveal';
-  import { formatHistoryDate } from '$lib/format';
-  import { incidentStates, maintenanceStates } from '$lib/status';
-  import type { AffectedMonitor, Incident, Maintenance } from '$lib/types';
+  import { reveal } from '../actions/reveal';
+  import { formatHistoryDate } from '../format';
+  import { incidentStates, maintenanceStates } from '../status';
+  import type { AffectedMonitor, Incident, Maintenance } from '../types';
 
   type CalendarEvent = {
     key: string;

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { formatHistoryDate, formatUptime } from '$lib/format';
-  import { serviceStatus } from '$lib/status';
-  import type { HistoryDay } from '$lib/types';
+  import { formatHistoryDate, formatUptime } from '../format';
+  import { serviceStatus } from '../status';
+  import type { HistoryDay } from '../types';
   let { day }: { day: HistoryDay } = $props();
 </script>
 

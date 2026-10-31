@@ -1,9 +1,9 @@
 <script lang="ts">
   import { ArrowClockwise, ArrowUpRight, CaretDown } from 'phosphor-svelte';
-  import { getIncident } from '$lib/api';
-  import { formatDate, formatDateTime, formatDuration } from '$lib/format';
-  import { incidentStates } from '$lib/status';
-  import type { Incident, IncidentDetail } from '$lib/types';
+  import { getIncident } from '../api';
+  import { formatDate, formatDateTime, formatDuration } from '../format';
+  import { incidentStates } from '../status';
+  import type { Incident, IncidentDetail } from '../types';
 
   let { incident, timezone, compact = false }: { incident: Incident; timezone: string; compact?: boolean } = $props();
   let expanded = $state(false);

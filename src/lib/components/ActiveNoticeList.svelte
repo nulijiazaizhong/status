@@ -1,10 +1,10 @@
 <script lang="ts">
   import { ArrowUpRight, CaretDown, Wrench } from 'phosphor-svelte';
   import IncidentItem from './IncidentItem.svelte';
-  import { reveal } from '$lib/actions/reveal';
-  import { formatDateTime } from '$lib/format';
-  import { isOngoing, maintenanceStates } from '$lib/status';
-  import type { Incident, Maintenance } from '$lib/types';
+  import { reveal } from '../actions/reveal';
+  import { formatDateTime } from '../format';
+  import { isOngoing, maintenanceStates } from '../status';
+  import type { Incident, Maintenance } from '../types';
 
   let { incidents, maintenances, timezone }: { incidents: Incident[]; maintenances: Maintenance[]; timezone: string } = $props();
   let showAll = $state(false);

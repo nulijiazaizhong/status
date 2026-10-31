@@ -1,7 +1,7 @@
 <script lang="ts">
   import StatusIcon from './StatusIcon.svelte';
-  import { serviceStatus } from '$lib/status';
-  import type { ServiceStatus } from '$lib/types';
+  import { serviceStatus } from '../status';
+  import type { ServiceStatus } from '../types';
 
   let { status, label }: { status: ServiceStatus; label?: string } = $props();
 </script>

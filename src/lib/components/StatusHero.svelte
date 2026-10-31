@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Clock } from 'phosphor-svelte';
   import StatusIcon from './StatusIcon.svelte';
-  import { formatTime } from '$lib/format';
-  import { summaryStatus } from '$lib/status';
-  import type { StatusData } from '$lib/types';
+  import { formatTime } from '../format';
+  import { summaryStatus } from '../status';
+  import type { StatusData } from '../types';
 
   let { data, hasActiveNotices }: { data: StatusData; hasActiveNotices: boolean } = $props();
   const content = $derived(summaryStatus[data.summary.status]);

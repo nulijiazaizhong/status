@@ -1,9 +1,9 @@
 <script lang="ts">
   import { CaretDown, CheckCircle } from 'phosphor-svelte';
   import IncidentItem from './IncidentItem.svelte';
-  import { reveal } from '$lib/actions/reveal';
-  import { isOngoing } from '$lib/status';
-  import type { Incident } from '$lib/types';
+  import { reveal } from '../actions/reveal';
+  import { isOngoing } from '../status';
+  import type { Incident } from '../types';
 
   let { incidents, timezone }: { incidents: Incident[]; timezone: string } = $props();
   let showAll = $state(false);
