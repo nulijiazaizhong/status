@@ -98,15 +98,45 @@ export function averageLatency(points) {
   return valid.length ? Math.round(valid.reduce((sum, value) => sum + value, 0) / valid.length) : null;
 }
 
+const dayFormatters = new Map();
+
+function dayFormatter(timezone) {
+  if (!dayFormatters.has(timezone)) {
+    dayFormatters.set(timezone, new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+    }));
+  }
+  return dayFormatters.get(timezone);
+}
+
+function formatterParts(timestamp, timezone) {
+  const parts = dayFormatter(timezone).formatToParts(new Date(timestamp * 1000));
+  return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+}
+
 export function dayKey(timestamp, timezone) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(new Date(timestamp * 1000));
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const values = formatterParts(timestamp, timezone);
   return `${values.year}-${values.month}-${values.day}`;
+}
+
+function timezoneOffset(timestamp, timezone) {
+  const values = formatterParts(timestamp, timezone);
+  const asUtc = Date.UTC(values.year, values.month - 1, values.day, values.hour, values.minute, values.second);
+  return Math.floor((asUtc - timestamp * 1000) / 1000);
+}
+
+function startOfZonedDay(date, timezone) {
+  let timestamp = Date.parse(`${date}T00:00:00Z`) / 1000;
+  timestamp -= timezoneOffset(timestamp, timezone);
+  timestamp = Date.parse(`${date}T00:00:00Z`) / 1000 - timezoneOffset(timestamp, timezone);
+  return timestamp;
 }
 
 export function recentDayKeys(days, timezone, now = Date.now()) {
@@ -115,17 +145,41 @@ export function recentDayKeys(days, timezone, now = Date.now()) {
   return Array.from({ length: days }, (_, index) => dayKey(Math.floor((noon - (days - index - 1) * 86400000) / 1000), 'UTC'));
 }
 
-export function aggregateHistory(points, days, timezone, settings, now = Date.now()) {
+function historyBounds(days, timezone, now) {
   const keys = recentDayKeys(days, timezone, now);
-  const groups = new Map(keys.map((key) => [key, []]));
-  for (const point of points) {
-    const key = dayKey(point.timestamp, timezone);
-    if (groups.has(key)) groups.get(key).push(point);
+  const tomorrow = Date.parse(`${keys.at(-1)}T12:00:00Z`) + 86400000;
+  keys.push(dayKey(Math.floor(tomorrow / 1000), 'UTC'));
+  return keys.slice(0, -1).map((date, index) => ({
+    date,
+    start: startOfZonedDay(date, timezone),
+    end: startOfZonedDay(keys[index + 1], timezone),
+  }));
+}
+
+function historyGroupIndex(timestamp, bounds) {
+  let low = 0;
+  let high = bounds.length - 1;
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    const bound = bounds[middle];
+    if (timestamp < bound.start) high = middle - 1;
+    else if (timestamp >= bound.end) low = middle + 1;
+    else return middle;
   }
-  return keys.map((date) => {
-    const daily = groups.get(date);
+  return -1;
+}
+
+export function aggregateHistory(points, days, timezone, settings, now = Date.now()) {
+  const bounds = historyBounds(days, timezone, now);
+  const groups = bounds.map(() => []);
+  for (const point of points) {
+    const index = historyGroupIndex(point.timestamp, bounds);
+    if (index >= 0) groups[index].push(point);
+  }
+  return bounds.map((bound, index) => {
+    const daily = groups[index];
     return {
-      date,
+      date: bound.date,
       status: daily.length ? dominantStatus(daily.map((point) => point.status || 'NO_DATA')) : 'NO_DATA',
       uptime: calculateUptime(daily, settings),
       averageLatency: averageLatency(daily),
@@ -134,6 +188,8 @@ export function aggregateHistory(points, days, timezone, settings, now = Date.no
 }
 
 export function historyUptime(points, days, timezone, settings, now = Date.now()) {
-  const keys = new Set(recentDayKeys(days, timezone, now));
-  return calculateUptime(points.filter((point) => keys.has(dayKey(point.timestamp, timezone))), settings);
+  const bounds = historyBounds(days, timezone, now);
+  const start = bounds[0].start;
+  const end = bounds.at(-1).end;
+  return calculateUptime(points.filter((point) => point.timestamp >= start && point.timestamp < end), settings);
 }
