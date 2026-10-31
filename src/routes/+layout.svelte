@@ -6,8 +6,13 @@
   import '@fontsource/geist-mono/500.css';
   import 'lxgw-wenkai-webfont/lxgwwenkaimono-regular.css';
   import '../app.css';
+  import { env } from '$env/dynamic/public';
 
   let { children } = $props();
 </script>
+
+<svelte:head>
+  <link rel="icon" href={env.PUBLIC_FAVICON_URL || '/favicon.svg'} />
+</svelte:head>
 
 {@render children()}

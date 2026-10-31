@@ -57,20 +57,20 @@
 </script>
 
 <svelte:head>
-  <title>{data?.page.title || '服务状态'}</title>
-  <meta name="description" content="查看各项服务的实时运行状态、历史可用率、维护计划与事故进展。" />
+  <title>{env.PUBLIC_PAGE_TITLE || data?.page.title || '服务状态'}</title>
+  <meta name="description" content={env.PUBLIC_META_DESCRIPTION || '查看各项服务的实时运行状态、历史可用率、维护计划与事故进展。'} />
   <meta name="theme-color" content="#000000" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content={data?.page.title || '服务状态'} />
-  <meta property="og:description" content="查看各项服务的实时运行状态、历史可用率、维护计划与事故进展。" />
-  <meta property="og:image" content={PUBLIC_STATUS_URL ? `${PUBLIC_STATUS_URL.replace(/\/$/, '')}/og-status.png` : '/og-status.png'} />
+  <meta property="og:title" content={env.PUBLIC_PAGE_TITLE || data?.page.title || '服务状态'} />
+  <meta property="og:description" content={env.PUBLIC_META_DESCRIPTION || '查看各项服务的实时运行状态、历史可用率、维护计划与事故进展。'} />
+  <meta property="og:image" content={env.PUBLIC_OG_IMAGE_URL || (PUBLIC_STATUS_URL ? `${PUBLIC_STATUS_URL.replace(/\/$/, '')}/og-status.png` : '/og-status.png')} />
   <meta name="twitter:card" content="summary_large_image" />
   {#if PUBLIC_STATUS_URL}<link rel="canonical" href={PUBLIC_STATUS_URL} />{/if}
 </svelte:head>
 
 <a class="skip-link" href="#main-content">跳转至主内容</a>
 <div class="page-shell">
-  <StatusHeader brand={data?.page.header || '服务状态'} logo={data?.page.logo} />
+  <StatusHeader brand={env.PUBLIC_BRAND_NAME || data?.page.header || '服务状态'} logo={env.PUBLIC_BRAND_LOGO || data?.page.logo} />
   <main id="main-content" tabindex="-1">
     {#if loading && !data}
       <SkeletonCard />

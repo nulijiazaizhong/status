@@ -18,6 +18,7 @@
       {#if PUBLIC_TERMS_URL}<a href={PUBLIC_TERMS_URL} target="_blank" rel="noopener noreferrer">服务条款</a>{/if}
     </div>
   </div>
+  {#if env.PUBLIC_COPYRIGHT}<div class="copyright">{env.PUBLIC_COPYRIGHT}</div>{/if}
   <div class="beian">
     <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2025160641号-3</a>
     <span aria-hidden="true">|</span>
@@ -32,5 +33,6 @@
   a { color: #A3A3A3; text-decoration: none; transition: color 300ms cubic-bezier(.22,1,.36,1); }
   a:hover { color: #FFF; }
   .links a { display: inline-flex; align-items: center; gap: 4px; }
-  .beian { align-items: center; justify-content: center; margin-top: 24px; }
+  .copyright { margin-top: 24px; text-align: center; }
+  .beian { align-items: center; justify-content: center; margin-top: 16px; }
 </style>
