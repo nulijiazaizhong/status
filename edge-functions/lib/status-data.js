@@ -1,0 +1,79 @@
+import { getPageAndMonitors, kenerGet, mapLimit, publicIncident, publicMonitor } from './kener.js';
+import { averageLatency, calculateUptime, overallStatus } from './status.js';
+
+const DAY = 86400;
+
+export async function getStatus(env, now = Math.floor(Date.now() / 1000)) {
+  const { page, monitors } = await getPageAndMonitors(env);
+  const start = now - 90 * DAY;
+  const [incidentResponse, maintenanceResponse, current] = await Promise.all([
+    kenerGet(env, `/incidents?start_ts=${start}`),
+    kenerGet(env, `/maintenances/events?limit=100&event_start_date_time=${now - DAY}`),
+    mapLimit(monitors, 5, async (monitor) => {
+      const response = await kenerGet(env, `/monitors/${encodeURIComponent(monitor.tag)}/data?start_ts=${now - DAY}&end_ts=${now + 60}`);
+      const points = Array.isArray(response?.data) ? response.data : [];
+      const latest = points.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+      return { monitor, points, latest };
+    }),
+  ]);
+  const monitorsByTag = new Map(monitors.map((monitor) => [monitor.tag, monitor]));
+  const publicMonitors = current.map(({ monitor, points, latest }) => ({
+    ...publicMonitor(monitor),
+    status: latest?.status || 'NO_DATA',
+    averageLatency: averageLatency(points),
+    uptime: calculateUptime(points, monitor.monitor_settings_json || {}),
+    updatedAt: latest?.timestamp || null,
+  }));
+  const baseIncidents = (incidentResponse?.incidents || [])
+    .map((incident) => publicIncident(incident, monitorsByTag))
+    .sort((a, b) => b.startedAt - a.startedAt);
+  const incidents = await mapLimit(baseIncidents, 5, async (incident) => {
+    if (incident.state === 'RESOLVED' || incident.endedAt) return incident;
+    try {
+      const response = await kenerGet(env, `/incidents/${incident.id}/comments`);
+      const latest = (response?.comments || []).slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+      return { ...incident, latestUpdate: latest ? { state: latest.state, comment: latest.comment, timestamp: latest.timestamp } : null };
+    } catch {
+      return { ...incident, latestUpdate: null };
+    }
+  });
+  const pageTags = new Set(monitors.map((monitor) => monitor.tag));
+  const maintenances = (maintenanceResponse?.events || [])
+    .filter((event) => ['SCHEDULED', 'READY', 'ONGOING'].includes(event.event_status))
+    .filter((event) => event.maintenance_status === 'ACTIVE' && event.event_end_date_time >= now)
+    .filter((event) => (event.monitors || []).some((monitor) => pageTags.has(monitor.monitor_tag)))
+    .map((event) => ({
+      id: event.event_id,
+      title: event.maintenance_title,
+      description: event.maintenance_description,
+      status: event.event_status,
+      startedAt: event.event_start_date_time,
+      endedAt: event.event_end_date_time,
+      url: event.url,
+      monitors: (event.monitors || []).filter((monitor) => pageTags.has(monitor.monitor_tag)).map((monitor) => ({
+        tag: monitor.monitor_tag,
+        name: monitorsByTag.get(monitor.monitor_tag)?.name || monitor.monitor_tag,
+      })),
+    }))
+    .sort((a, b) => a.startedAt - b.startedAt);
+  const ongoing = maintenances.filter((event) => event.status === 'ONGOING').length;
+  return {
+    generatedAt: now,
+    stale: false,
+    timezone: env.STATUS_TIMEZONE || 'Asia/Shanghai',
+    page: {
+      title: page.page_title,
+      header: page.page_header,
+      subheader: page.page_subheader,
+      logo: page.page_logo,
+    },
+    summary: {
+      status: overallStatus(publicMonitors, ongoing),
+      operational: publicMonitors.filter((monitor) => monitor.status === 'UP').length,
+      total: publicMonitors.length,
+    },
+    monitors: publicMonitors,
+    incidents,
+    maintenances,
+  };
+}
