@@ -37,7 +37,7 @@
 </article>
 
 <style>
-  .monitor-card { padding: 24px; border: 1px solid #313131; border-radius: 16px; background: #181818; }
+  .monitor-card { padding: 24px; background: #181818; }
   .heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   h3 { margin: 0; color: #FFF; font-size: 18px; line-height: 28px; font-weight: 600; text-wrap: balance; }
   p { margin: 4px 0 0; color: #A3A3A3; font-size: 14px; line-height: 20px; text-wrap: pretty; }

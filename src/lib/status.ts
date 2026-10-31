@@ -9,7 +9,7 @@ export const serviceStatus = {
 } satisfies Record<ServiceStatus, { label: string; color: string }>;
 
 export const summaryStatus: Record<SummaryStatus, { title: string; description: string }> = {
-  OPERATIONAL: { title: '所有系统运行正常', description: '各项核心服务均可用，监控数据持续更新。' },
+  OPERATIONAL: { title: '一切运行正常', description: '所有系统均按预期运行。' },
   PARTIAL_OUTAGE: { title: '部分服务出现异常', description: '部分服务受到影响，其余服务仍在正常运行。' },
   MAJOR_OUTAGE: { title: '大面积服务异常', description: '多项核心服务受到影响，工程团队正在处理。' },
   DEGRADED: { title: '部分服务性能下降', description: '服务仍然可用，但部分请求可能比平时更慢。' },

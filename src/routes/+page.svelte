@@ -7,9 +7,7 @@
   import StatusHero from '$lib/components/StatusHero.svelte';
   import ActiveNoticeList from '$lib/components/ActiveNoticeList.svelte';
   import MonitorSection from '$lib/components/MonitorSection.svelte';
-  import ReliabilityStatement from '$lib/components/ReliabilityStatement.svelte';
-  import IncidentSection from '$lib/components/IncidentSection.svelte';
-  import MaintenanceSection from '$lib/components/MaintenanceSection.svelte';
+  import EventCalendar from '$lib/components/EventCalendar.svelte';
   import StatusFooter from '$lib/components/StatusFooter.svelte';
   import SkeletonCard from '$lib/components/SkeletonCard.svelte';
   import InlineError from '$lib/components/InlineError.svelte';
@@ -79,9 +77,7 @@
       <StatusHero {data} {hasActiveNotices} />
       <ActiveNoticeList incidents={data.incidents} maintenances={data.maintenances} timezone={data.timezone} />
       <MonitorSection monitors={data.monitors} incidents={data.incidents} timezone={data.timezone} />
-      <ReliabilityStatement />
-      <IncidentSection incidents={data.incidents} timezone={data.timezone} />
-      <MaintenanceSection maintenances={data.maintenanceHistory} timezone={data.timezone} />
+      <EventCalendar incidents={data.incidents} maintenances={data.maintenances} maintenanceHistory={data.maintenanceHistory} timezone={data.timezone} />
     {:else}
       <section class="fatal"><p class="kicker">状态数据不可用</p><h1>暂时无法获取最新状态</h1><p>{error || '状态服务尚未响应，请稍后重试。'}</p><InlineError message="这不代表所有业务服务均已宕机，仅表示当前无法读取监控数据。" retry={() => refresh()} /></section>
     {/if}

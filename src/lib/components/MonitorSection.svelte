@@ -16,7 +16,7 @@
 </script>
 
 <section class="section" id="services" aria-labelledby="services-title" use:reveal>
-  <div class="section-heading"><div><span class="kicker">服务目录</span><h2 id="services-title">每项服务，清晰可见</h2></div><span class="count">{monitors.length} 项监控</span></div>
+  <div class="section-heading"><h2 id="services-title">系统状态</h2><span class="count">近 30 天 · {monitors.length} 项监控</span></div>
   {#if monitors.length}
     {#each groups as group (group.name)}
       <div class="group"><h3>{group.name}</h3><div class="cards">{#each group.monitors as monitor (monitor.tag)}<MonitorCard {monitor} {incidents} {timezone} />{/each}</div></div>
@@ -25,16 +25,15 @@
 </section>
 
 <style>
-  .section { padding: 80px 0; scroll-margin-top: 24px; }
-  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 40px; }
-  .kicker { color: #737373; font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: .12em; }
-  h2 { margin: 8px 0 0; color: #FFF; font-size: 24px; line-height: 32px; font-weight: 600; text-wrap: balance; }
+  .section { padding: 0 0 64px; scroll-margin-top: 24px; }
+  .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  h2 { margin: 0; color: #FFF; font-size: 24px; line-height: 32px; font-weight: 600; text-wrap: balance; }
   .count { color: #737373; font-family: 'Geist Mono',monospace; font-size: 12px; line-height: 16px; }
-  .group + .group { margin-top: 40px; }
-  h3 { margin: 0 0 16px; color: #A3A3A3; font-size: 14px; line-height: 20px; font-weight: 500; }
-  .cards { display: grid; gap: 16px; }
+  .group + .group { margin-top: 32px; }
+  h3 { margin: 0 0 12px; color: #737373; font-size: 12px; line-height: 16px; font-weight: 500; }
+  .cards { display: grid; gap: 1px; overflow: hidden; border: 1px solid #313131; border-radius: 16px; background: #313131; }
   .empty { padding: 32px; border: 1px solid #313131; border-radius: 16px; background: #181818; }
   .empty h3 { color: #FFF; font-size: 18px; line-height: 28px; }
   .empty p { margin: 8px 0 0; color: #A3A3A3; font-size: 14px; line-height: 20px; }
-  @media (max-width: 600px) { .section { padding: 64px 0; } }
+  @media (max-width: 600px) { .section { padding-bottom: 48px; } .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; } }
 </style>

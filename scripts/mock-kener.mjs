@@ -48,6 +48,11 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({ comments }));
   } else if (url.pathname === '/api/v4/maintenances/events') {
     res.end(JSON.stringify({ events: [{ event_id: 8, maintenance_title: '网关证书更新', maintenance_description: '轮换边缘证书并检查握手兼容性。', maintenance_status: 'ACTIVE', event_status: 'SCHEDULED', event_start_date_time: now() + 2 * 86400, event_end_date_time: now() + 2 * 86400 + 3600, monitors: [{ monitor_tag: 'gateway', impact: 'MAINTENANCE' }], url: 'http://127.0.0.1:8787/maintenances/8' }] }));
+  } else if (url.pathname === '/dashboard-apis/monitor-bars') {
+    const tag = url.searchParams.get('tags') || 'api';
+    res.end(JSON.stringify({ data: { [tag]: { uptime: '99.8912', uptimeData: Array.from({ length: 30 }, (_, index) => ({ ts: now() - (29 - index) * 86400, countOfUp: 1440, countOfDown: 0, countOfDegraded: 0, countOfMaintenance: 0, avgLatency: 158 })) } } }));
+  } else if (url.pathname === '/dashboard-apis/events-by-month') {
+    res.end(JSON.stringify({ maintenances: [{ id: 6, title: '网关例行维护', description: '完成证书轮换与连接池优化。', start_date_time: now() - 4 * 86400, end_date_time: now() - 4 * 86400 + 3600, status: 'COMPLETED', monitors: [{ monitor_tag: 'gateway', monitor_name: '边缘网关', monitor_impact: 'MAINTENANCE' }] }] }));
   } else { res.writeHead(404); res.end('{}'); }
 });
 server.listen(8787, '127.0.0.1', () => console.log('Mock Kener listening on http://127.0.0.1:8787'));
