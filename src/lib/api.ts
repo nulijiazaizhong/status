@@ -31,8 +31,12 @@ export function getStatus() {
   return request<StatusData>('/api/status');
 }
 
+let historyQueue: Promise<unknown> = Promise.resolve();
+
 export function getHistory(tag: string, days: number) {
-  return request<HistoryData>(`/api/monitors/${encodeURIComponent(tag)}/history?days=${days}`);
+  const result = historyQueue.then(() => request<HistoryData>(`/api/monitors/${encodeURIComponent(tag)}/history?days=${days}`));
+  historyQueue = result.catch(() => undefined);
+  return result;
 }
 
 export function getIncident(id: number) {
