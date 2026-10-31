@@ -15,8 +15,8 @@ export async function onRequestGet(context) {
     return await withCache(context, days === 1 ? 300 : 3600, 7 * 86400, async () => {
       const now = Math.floor(Date.now() / 1000);
       const ranges = [];
-      for (let start = now - (days + 1) * 86400; start < now; start += 7 * 86400) {
-        ranges.push({ start, end: Math.min(start + 7 * 86400, now) });
+      for (let start = now - (days + 1) * 86400; start < now; start += 2 * 86400) {
+        ranges.push({ start, end: Math.min(start + 2 * 86400, now) });
       }
       const responses = await mapLimit(ranges, 3, ({ start, end }) => kenerGet(
         context.env,

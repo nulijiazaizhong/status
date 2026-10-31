@@ -8,7 +8,7 @@ const monitor = { tag: 'api', name: 'API', description: null, category_name: 'Co
 describe('history request chunking', () => {
   beforeEach(() => { clearMemoryCache(); vi.unstubAllGlobals(); });
 
-  it('requests 90 days in bounded seven-day chunks', async () => {
+  it('requests 90 days in bounded two-day chunks', async () => {
     let dataRequests = 0;
     vi.stubGlobal('fetch', vi.fn(async (input) => {
       const path = new URL(String(input)).pathname;
@@ -26,7 +26,7 @@ describe('history request chunking', () => {
       params: { tag: 'api' },
     });
     expect(response.status).toBe(200);
-    expect(dataRequests).toBe(13);
+    expect(dataRequests).toBe(46);
     expect((await response.json()).history).toHaveLength(90);
   });
 });
